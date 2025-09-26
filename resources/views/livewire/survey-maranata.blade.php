@@ -210,7 +210,7 @@
                     <h3 class="mt-5 text-2xl leading-6 font-bold text-gray-900">Acceso al Reporte</h3>
                     <p class="mt-2 text-base text-gray-600">Por favor, ingresa la clave para ver las estadísticas.</p>
                     <div class="mt-6 max-w-sm mx-auto">
-                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500 px-4">
+                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500 px-4">
                         @if($passwordError)
                             <p class="text-red-500 text-sm mt-2">{{ $passwordError }}</p>
                         @endif
