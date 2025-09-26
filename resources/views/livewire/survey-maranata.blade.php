@@ -165,7 +165,7 @@
                                     <div class="flex-1">
                                         <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ TransportEnum::INDIVIDUAL->getLabel() }}</h4>
                                         <div class="space-y-2 text-sm text-gray-600">
-                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento</span> (<a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-blue-500 underline">Club Portada del Sol</a>)</div>
+                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento (<a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-blue-500 underline">Club Portada del Sol</a>)</span> </div>
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                             <div class="flex items-center space-x-2"><span>🕐</span><span>Horario flexible de llegada</span></div>
                                             <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
