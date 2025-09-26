@@ -122,7 +122,7 @@
                                         <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
                                             <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 10 soles pasaje</strong> (Incluye ida y vuelta)</span></div>
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
-                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde la puerta de la iglesia <strong>(Sábado 27, 8:00 am)</strong> </span></div>
+                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde la puerta de la iglesia <strong> a las 8:00 am</strong> </span></div>
                                             <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
                                             <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
                                         </div>
