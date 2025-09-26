@@ -277,7 +277,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                         <div class="bg-blue-100 text-blue-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busSeats }}</p><p class="font-medium">Asientos Necesarios</p></div>
                         <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busCapacity }} asientos</p></div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Ingresos por Pasajes</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto por Pasajes</p></div>
                     </div>
                 </div>
 

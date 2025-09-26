@@ -57,7 +57,7 @@
         @stack('styles')
 
     </head>
-    <body class="antialiased min-h-screen  bg-fixed bg-gradient-to-br from-blue-100 via-cyan-50 to-green-100 flex flex-col" >
+    <body class="antialiased min-h-screen  bg-fixed bg-gradient-to-br from-blue-100 via-cyan-50 to-green-100 flex flex-col lg:py-5" >
 
         {{ $slot }}
 
