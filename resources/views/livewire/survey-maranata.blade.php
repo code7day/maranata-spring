@@ -31,6 +31,7 @@
 
 <div x-data="{
         view: 'form',
+        isSubmitting: false, // Para evitar doble clic
         seats: @entangle('seats'),
         standing: @entangle('standing'),
         baseAvailableSeated: {{ $this->availableBusSeats }},
@@ -61,7 +62,7 @@
         }
      }"
      x-init="initTimer()"
-     @participation-saved.window="view = 'success'; baseAvailableSeated = $event.detail.availableSeats; baseAvailableStanding = $event.detail.availableStanding; totalFare = $event.detail.totalFare"
+     @participation-saved.window="view = 'success'; isSubmitting = false; baseAvailableSeated = $event.detail.availableSeats; baseAvailableStanding = $event.detail.availableStanding; totalFare = $event.detail.totalFare"
      @report-unlocked.window="view = 'report'"
      class="w-full max-w-4xl mx-auto">
     <div class="relative w-full h-48 md:h-48 md:rounded-t-2xl bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center text-white overflow-hidden">
@@ -95,7 +96,7 @@
                         </div>
                     </div>
 
-                    <form wire:submit.prevent="save" class="space-y-6">
+                    <form @submit.prevent="isSubmitting = true; $wire.save()" class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="fullName" class="text-base font-medium text-gray-800">Nombre y Apellidos</label>
@@ -157,7 +158,6 @@
                                 </div>
                             </div>
 
-
                         <div x-show="$wire.showSeatsInput" x-transition class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-2">
@@ -174,10 +174,11 @@
                             <div x-show="(seats > 0 || standing > 0)" class="text-center p-3 bg-yellow-100 border border-yellow-200 rounded-lg">
                                 <p class="font-semibold text-yellow-800">Monto total a pagar por pasajes:
                                     <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 6 + (standing || 0) * 3 ).toFixed(2)}`"></span>
-                                    <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo los hermanos <strong>Wilmer Salcedo / Wilfredo Colque</strong>.</p>
+                                    <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
                                 </p>
                             </div>
                         </div>
+
                             <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
                                 class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 !bg-green-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
@@ -197,9 +198,9 @@
                         </div>
                         @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
-                        <button type="submit" class="w-full h-12 text-base font-semibold text-white cursor-pointer rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 " wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="save">Confirmar Participación</span>
-                            <span wire:loading wire:target="save">Registrando...</span>
+                        <button type="submit" :disabled="isSubmitting" class="w-full h-12 text-base font-semibold text-white cursor-pointer rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 " wire:loading.attr="disabled">
+                            <span x-show="!isSubmitting"><span wire:loading.remove wire:target="save">Confirmar Participación</span></span>
+                            <span x-show="isSubmitting" wire:loading wire:target="save">Registrando...</span>
                         </button>
                     </form>
 
@@ -231,7 +232,7 @@
                             <span wire:loading.remove wire:target="checkPassword">Confirmar</span>
                             <span wire:loading wire:target="checkPassword">Verificando...</span>
                         </button>
-                        <button @click="view = 'form'" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                        <button @click="view = 'form'; isSubmitting = false" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                             Cancelar
                         </button>
                     </div>
@@ -252,14 +253,14 @@
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                         <div x-show="totalFare > 0" class="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
                             <p class="font-semibold text-yellow-800">Monto a pagar por pasajes: <span class="text-lg font-bold" x-text="`S/ ${totalFare.toFixed(2)}`"></span></p>
-                            <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo los hermanos <strong>Wilmer Salcedo / Wilfredo Colque</strong>.</p>
+                            <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
                         </div>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
                         <button @click="$wire.refreshReportData(); $wire.isReportUnlocked ? view = 'report' : view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
                             Ver Reporte
                         </button>
-                        <button @click="view = 'form'" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                        <button @click="view = 'form'; isSubmitting = false" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                             Registrar Otro
                         </button>
                     </div>
@@ -273,7 +274,7 @@
         <div class="relative z-10 -mt-12">
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 <div class="text-center mb-8">
-                    <a href="#" @click.prevent="view = 'form'" wire:click.prevent="resetForm" class="text-sm font-medium text-blue-600 hover:text-blue-500 absolute top-8 left-8">← Volver al Formulario</a>
+                    <a href="#" @click.prevent="view = 'form'; isSubmitting = false" wire:click.prevent="resetForm" class="text-sm font-medium text-blue-600 hover:text-blue-500 absolute top-8 left-8">← Volver al Formulario</a>
                     <h2 class="text-3xl font-bold tracking-tight mt-5">Reporte de Participación</h2>
                     <p class="mt-2 text-lg text-gray-600">Maranata Spring 2025</p>
                 </div>
@@ -289,27 +290,15 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center"><span class="text-xl mr-3">🚌</span> Información para Contratar Bus</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         <div class="bg-blue-100 text-blue-800 p-4 rounded-lg flex flex-col justify-between">
-                            <div>
-                                <p class="text-3xl font-bold">{{ $this->totalBusSeated }}</p>
-                                <p class="font-medium">Asientos Necesarios</p>
-                            </div>
+                            <div><p class="text-3xl font-bold">{{ $this->totalBusSeated }}</p><p class="font-medium">Asientos Necesarios</p></div>
                             <p class="text-xs mt-1">({{ $this->totalBusSeated }} x S/6 = S/{{ number_format($this->seatedBusIncome, 2) }})</p>
                         </div>
                         <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg flex flex-col justify-between">
-                            <div>
-                                <p class="text-3xl font-bold">{{ $this->totalBusStanding }}</p>
-                                <p class="font-medium">Pasajeros de Pie</p>
-                            </div>
+                            <div><p class="text-3xl font-bold">{{ $this->totalBusStanding }}</p><p class="font-medium">Pasajeros de Pie</p></div>
                             <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/3 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
                         </div>
-                        <div class="bg-green-100 text-green-800 p-4 rounded-lg">
-                            <p class="text-3xl font-bold">{{ $this->busesNeeded }}</p>
-                            <p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p>
-                        </div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
-                            <p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p>
-                            <p class="font-medium">Monto a recaudar</p>
-                        </div>
+                        <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto a recaudar</p></div>
                     </div>
                 </div>
 
@@ -340,6 +329,7 @@
                                             @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
+                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Anular</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -360,10 +350,13 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button wire:click="deleteParticipation({{ $p->id }})" wire:confirm="¿Estás seguro de que quieres anular este registro?" class="text-red-600 hover:text-red-900 cursor-pointer">Anular</button>
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No hay registros que coincidan con el filtro.</td>
+                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No hay registros que coincidan con el filtro.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

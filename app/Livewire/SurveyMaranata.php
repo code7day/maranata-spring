@@ -25,7 +25,7 @@ class SurveyMaranata extends Component
     public bool $showSeatsInput = false;
 
     public int $busSeatedCapacity = 30;
-    public int $busStandingCapacity = 10;
+    public int $busStandingCapacity = 15;
     public int $maxSeatsPerReservation = 7;
 
     public string $reportPassword = '';
@@ -40,7 +40,7 @@ class SurveyMaranata extends Component
 
     public function mount()
     {
-        $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(17, 00, 0)->toIso8601String();
+        $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(17, 0, 0)->toIso8601String();
 
         if (Session::get('report_unlocked')) {
             $this->isReportUnlocked = true;
@@ -61,6 +61,12 @@ class SurveyMaranata extends Component
             $this->sortDirection = 'asc';
         }
         $this->sortBy = $field;
+    }
+
+    public function deleteParticipation($id)
+    {
+        Participation::find($id)?->delete();
+        unset($this->allParticipations);
     }
 
     public function updatedTransport(?TransportEnum $value)
@@ -141,7 +147,7 @@ class SurveyMaranata extends Component
         if ($this->transport instanceof TransportEnum && $this->transport === TransportEnum::BUS) {
             $seatsToSave = (int) $this->seats;
             $standingToSave = (int) $this->standing;
-            $totalFare = ($seatsToSave * 6) + ($standingToSave * 3);
+            $totalFare = ($seatsToSave * 7) + ($standingToSave * 4);
         }
 
         Participation::create([
@@ -155,9 +161,10 @@ class SurveyMaranata extends Component
         $this->dispatch('participation-saved',
             availableSeats: $this->availableBusSeats(),
             availableStanding: $this->availableStandingSeats(),
-            totalFare: $totalFare // Se envía el total a pagar
+            totalFare: $totalFare
         );
-        $this->resetForm();
+        // CORRECCIÓN: Se elimina la llamada a resetForm() para evitar que el estado se borre prematuramente.
+        // El reseteo ahora lo manejan los botones en la vista de éxito.
     }
 
     // --- INDICADORES GLOBALES (NO CAMBIAN CON FILTROS) ---
@@ -240,14 +247,14 @@ class SurveyMaranata extends Component
     #[Computed]
     public function seatedBusIncome()
     {
-        $seatedPrice = 6;
+        $seatedPrice = 7;
         return $this->totalBusSeated * $seatedPrice;
     }
 
     #[Computed]
     public function standingBusIncome()
     {
-        $standingPrice = 3;
+        $standingPrice = 4;
         return $this->totalBusStanding * $standingPrice;
     }
 
@@ -270,8 +277,8 @@ class SurveyMaranata extends Component
         $query->orderBy($this->sortBy, $this->sortDirection);
         $participations = $query->get();
 
-        $busChartCount = $participations->where('transport', TransportEnum::BUS)->sum(fn($p) => $p->seats + $p->standing);
-        $ownChartCount = $participations->where('transport', TransportEnum::INDIVIDUAL)->count();
+        $busChartCount = $this->allParticipations->where('transport', TransportEnum::BUS)->sum(fn($p) => $p->seats + $p->standing);
+        $ownChartCount = $this->allParticipations->where('transport', TransportEnum::INDIVIDUAL)->count();
         $this->dispatch('updateChart', bus: $busChartCount, own: $ownChartCount);
 
         return view('livewire.survey-maranata', [
