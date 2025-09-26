@@ -308,7 +308,7 @@
                         </div>
                         <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
                             <p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p>
-                            <p class="font-medium">Monto Recaudado</p>
+                            <p class="font-medium">Monto a recaudar</p>
                         </div>
                     </div>
                 </div>
