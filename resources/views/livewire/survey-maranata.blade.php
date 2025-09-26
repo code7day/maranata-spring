@@ -115,7 +115,7 @@
                             <div @click="$wire.set('transport', '{{ TransportEnum::BUS->value }}')"
                                 class="rounded-xl border-4 transition-all bg-white  {{ $this->isBusDisabled ? 'border-gray-300 !bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 !bg-blue-50' : 'border-gray-200' }}">
                                 <div class="flex flex-col lg:flex-row items-start lg:space-x-4 p-5">
-                                    <div class="flex items-start space-x-4 flex-1">
+                                    <div class="flex items-start space-x-4 w-full lg:flex-1">
                                         <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
                                             <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
                                         </div>
