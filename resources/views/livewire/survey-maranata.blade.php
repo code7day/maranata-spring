@@ -157,24 +157,6 @@
                                 </div>
                             </div>
 
-                            <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
-                                class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 !bg-green-50' : 'border-gray-200' }}">
-                                <div class="flex items-start space-x-4 p-5">
-                                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><span class="text-2xl">🚗</span></div>
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ TransportEnum::INDIVIDUAL->getLabel() }}</h4>
-                                        <div class="space-y-2 text-sm text-gray-600">
-                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento (<a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-blue-500 underline">Club Portada del Sol</a>)</span> </div>
-                                            <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
-                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Horario flexible de llegada</span></div>
-                                            <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
-                                        </div>
-                                        <div class="mt-3 text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full inline-block">Mayor flexibilidad personal</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                         <div x-show="$wire.showSeatsInput" x-transition class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
@@ -196,6 +178,24 @@
                                 </p>
                             </div>
                         </div>
+                            <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
+                                class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 !bg-green-50' : 'border-gray-200' }}">
+                                <div class="flex items-start space-x-4 p-5">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><span class="text-2xl">🚗</span></div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ TransportEnum::INDIVIDUAL->getLabel() }}</h4>
+                                        <div class="space-y-2 text-sm text-gray-600">
+                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento (<a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-blue-500 underline">Club Portada del Sol</a>)</span> </div>
+                                            <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
+                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Horario flexible de llegada</span></div>
+                                            <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
+                                        </div>
+                                        <div class="mt-3 text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full inline-block">Mayor flexibilidad personal</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                         <button type="submit" class="w-full h-12 text-base font-semibold text-white cursor-pointer rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 " wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">Confirmar Participación</span>
