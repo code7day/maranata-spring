@@ -78,9 +78,10 @@
         <div class="relative z-10 -mt-12">
             <div class="bg-gray-50/80 backdrop-blur-sm shadow-xl rounded-2xl border border-gray-200/50">
                 <div class="p-6 sm:p-8">
+
                     <div class="text-center mb-6">
                         <div x-show="!timerExpired">
-                            <h2 class="text-lg font-semibold text-gray-800 mb-2">¡Reserva tu cupo para el bus ahora!</h2>
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">¡Listo, solo habrá un Bus!</h2>
                             <div class="flex justify-center items-center space-x-2 text-gray-900">
                                 <div class="timer-box"><span x-text="timeLeft.hours" class="text-3xl font-bold"></span><div class="text-xs">HRS</div></div>
                                 <span class="text-3xl font-bold">:</span>
@@ -88,7 +89,8 @@
                                 <span class="text-3xl font-bold">:</span>
                                 <div class="timer-box"><span x-text="timeLeft.seconds" class="text-3xl font-bold"></span><div class="text-xs">SEG</div></div>
                             </div>
-                            <p class="text-sm text-gray-600 mt-2">El tiempo para asegurar tu asiento en el bus se acaba.</p>
+                            <h2 class="text-lg font-semibold text-red-800 mt-2">¡Reserva tu cupo para el bus ahora!</h2>
+                            <p class="text-sm text-gray-600 mt-0">No esperes a ultima hora y te quedes sin cupo, Feliz sabado!.</p>
                         </div>
                         <div x-show="timerExpired" x-cloak>
                              <h2 class="text-xl font-bold text-red-600">El tiempo de reserva para el bus ha terminado.</h2>
@@ -115,7 +117,7 @@
                             <div @click="$wire.set('transport', '{{ TransportEnum::BUS->value }}')"
                                 class="rounded-xl border-4 transition-all bg-white  {{ $this->isBusDisabled ? 'border-gray-300 !bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 !bg-blue-50' : 'border-gray-200' }}">
                                 <div class="flex flex-col lg:flex-row items-start lg:space-x-4 p-5">
-                                    <div class="flex items-start space-x-4 w-full lg:flex-1">
+                                    <div class="flex items-start space-x-4 flex-1">
                                         <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
                                             <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
                                         </div>
@@ -256,7 +258,7 @@
                     <div class="mt-3 space-y-3">
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                         <div x-show="totalFare > 0" class="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
-                            {{-- <p class="font-semibold text-yellow-800">Monto a pagar por pasajes: <span class="text-lg font-bold" x-text="`S/ ${totalFare.toFixed(2)}`"></span></p> --}}
+                            <p class="font-semibold text-yellow-800">Monto a pagar por pasajes: <span class="text-lg font-bold" x-text="`S/ ${totalFare.toFixed(2)}`"></span></p>
                             <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
                         </div>
                     </div>
@@ -302,7 +304,7 @@
                             <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/4 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
                         </div>
                         <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p></div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto a recaudar</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto Recaudado</p></div>
                     </div>
                 </div>
 
@@ -321,19 +323,28 @@
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
-                                            <span>Nombre</span>
-                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                            <span>Nombre / Contacto</span>
+                                            @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle de Viaje</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
+                                            <span>Fecha de Registro</span>
+                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                        </a>
+                                    </th>
                                     <th scope="col" class="relative px-6 py-3"><span class="sr-only">Anular</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($participations as $p)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}<span class="block text-xs text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $p->full_name }}
+                                        <span class="block text-xs text-gray-500">{{ $p->cellphone }}</span>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         @if($p->transport === TransportEnum::BUS)
                                             <span>{{ $p->seats }} sentados, {{ $p->standing }} de pie</span>
@@ -347,6 +358,7 @@
                                             {{ $p->transport->getLabel() }}
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="deleteParticipation({{ $p->id }})" wire:confirm="¿Estás seguro de que quieres anular este registro?" class="text-red-600 hover:text-red-900 cursor-pointer">Anular</button>
                                     </td>
