@@ -25,7 +25,7 @@ class SurveyMaranata extends Component
     public bool $showSeatsInput = false;
 
     public int $busSeatedCapacity = 30;
-    public int $busStandingCapacity = 15;
+    public int $busStandingCapacity = 10;
     public int $maxSeatsPerReservation = 7;
 
     public string $reportPassword = '';
@@ -136,9 +136,12 @@ class SurveyMaranata extends Component
 
         $seatsToSave = 0;
         $standingToSave = 0;
+        $totalFare = 0;
+
         if ($this->transport instanceof TransportEnum && $this->transport === TransportEnum::BUS) {
             $seatsToSave = (int) $this->seats;
             $standingToSave = (int) $this->standing;
+            $totalFare = ($seatsToSave * 6) + ($standingToSave * 3);
         }
 
         Participation::create([
@@ -151,7 +154,8 @@ class SurveyMaranata extends Component
 
         $this->dispatch('participation-saved',
             availableSeats: $this->availableBusSeats(),
-            availableStanding: $this->availableStandingSeats()
+            availableStanding: $this->availableStandingSeats(),
+            totalFare: $totalFare // Se envía el total a pagar
         );
         $this->resetForm();
     }
@@ -233,18 +237,17 @@ class SurveyMaranata extends Component
         return ceil($this->totalBusSeated / $this->busSeatedCapacity);
     }
 
-    // --- NUEVOS MÉTODOS PARA EL CÁLCULO DE INGRESOS ---
     #[Computed]
     public function seatedBusIncome()
     {
-        $seatedPrice = 7;
+        $seatedPrice = 6;
         return $this->totalBusSeated * $seatedPrice;
     }
 
     #[Computed]
     public function standingBusIncome()
     {
-        $standingPrice = 4;
+        $standingPrice = 3;
         return $this->totalBusStanding * $standingPrice;
     }
 
