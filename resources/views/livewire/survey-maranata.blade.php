@@ -125,9 +125,9 @@
                                             <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
                                             <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
                                         </div>
-                                        <div class="mt-4 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3">
+                                        <div class="mt-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3">
                                             <div class="flex items-center justify-between mb-2">
-                                                <div class="flex items-center space-x-2"><span class="text-lg">📊</span><span class="font-medium text-gray-900 text-sm">Disponibilidad</span></div>
+                                                <div class="flex items-center space-x-2"><span class="font-medium text-gray-900 text-sm">Disponibilidad</span></div>
                                                 <div class="text-right">
                                                     <div class="text-2xl font-bold {{ $this->isBusDisabled ? 'text-red-600' : 'text-orange-600' }}"
                                                          x-text="$wire.showSeatsInput ? (baseAvailable - (seats > 0 ? seats : 0)) : baseAvailable">
