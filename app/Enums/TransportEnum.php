@@ -13,8 +13,8 @@ enum TransportEnum: string
     public function getLabel(): ?string
     {
         return match($this) {
-            self::BUS => 'Transporte en Bus',
-            self::INDIVIDUAL => 'Transporte por su Cuenta',
+            self::BUS => 'Quiero ir en el Bus',
+            self::INDIVIDUAL => 'Iré por mi cuenta',
         };
     }
 
