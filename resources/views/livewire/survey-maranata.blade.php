@@ -99,7 +99,7 @@
                                             @if($this->isBusDisabled)
                                                 <div class="text-xs bg-red-100 text-red-800 px-3 py-1 rounded-full">🚫 Sin cupos disponibles</div>
                                             @else
-                                                <div class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">¡Comunión desde el viaje!</div>
+                                                <div class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">¡En comunión desde el viaje!</div>
                                                 @if($this->availableBusSeats <= 15)
                                                     <div class="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full animate-pulse-slow">⚡ ¡Últimos cupos!</div>
                                                 @endif
@@ -191,7 +191,7 @@
                     </div>
                     <h3 class="mt-5 text-2xl leading-6 font-bold text-gray-900">¡Participación Confirmada!</h3>
                     <div class="mt-3">
-                        <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de comunión!</p>
+                        <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
                         <button @click="view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
