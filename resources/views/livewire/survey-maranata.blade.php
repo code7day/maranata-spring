@@ -304,7 +304,7 @@
                             <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/4 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
                         </div>
                         <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p></div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto Recaudado</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto a recaudar</p></div>
                     </div>
                 </div>
 
