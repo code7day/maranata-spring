@@ -212,7 +212,7 @@
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 <div class="text-center mb-8">
                     <a href="#" @click.prevent="view = 'form'" wire:click.prevent="resetForm" class="text-sm font-medium text-blue-600 hover:text-blue-500 absolute top-8 left-8">← Volver al Formulario</a>
-                    <h2 class="text-3xl font-bold tracking-tight">Reporte de Participación</h2>
+                    <h2 class="text-3xl font-bold tracking-tight mt-5">Reporte de Participación</h2>
                     <p class="mt-2 text-lg text-gray-600">Maranata Spring 2025</p>
                 </div>
 
