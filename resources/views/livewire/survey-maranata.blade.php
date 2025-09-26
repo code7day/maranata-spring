@@ -174,7 +174,7 @@
                             <div x-show="(seats > 0 || standing > 0)" class="text-center p-3 bg-yellow-100 border border-yellow-200 rounded-lg">
                                 <p class="font-semibold text-yellow-800">Monto total a pagar por pasajes:
                                     <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 6 + (standing || 0) * 3 ).toFixed(2)}`"></span>
-                                    <p class="text-sm mt-2 text-gray-700">No olvides yapear al <strong>970 165 493</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque</strong>.</p>
+                                    <p class="text-sm mt-2 text-gray-700">No olvides yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilmer Salcedo</strong>.</p>
                                 </p>
                             </div>
                         </div>
@@ -252,7 +252,7 @@
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                         <div x-show="totalFare > 0" class="p-4 bg-yellow-100 border border-yellow-200 rounded-lg">
                             <p class="font-semibold text-yellow-800">Monto a pagar por pasajes: <span class="text-lg font-bold" x-text="`S/ ${totalFare.toFixed(2)}`"></span></p>
-                            <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>970 165 493</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque</strong>.</p>
+                            <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilmer Salcedo</strong>.</p>
                         </div>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
