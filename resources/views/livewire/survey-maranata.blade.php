@@ -31,7 +31,7 @@
 
 <div x-data="{
         view: 'form',
-        isSubmitting: false, // Para evitar doble clic
+        isSubmitting: false,
         seats: @entangle('seats'),
         standing: @entangle('standing'),
         baseAvailableSeated: {{ $this->availableBusSeats }},
@@ -114,45 +114,49 @@
                             <label class="text-base font-medium text-gray-800">Elige tu opción de transporte</label>
                             <div @click="$wire.set('transport', '{{ TransportEnum::BUS->value }}')"
                                 class="rounded-xl border-4 transition-all bg-white  {{ $this->isBusDisabled ? 'border-gray-300 !bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 !bg-blue-50' : 'border-gray-200' }}">
-                                <div class="flex items-start space-x-4 p-5">
-                                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
-                                        <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ $this->isBusDisabled ? TransportEnum::BUS->getLabel().' - AGOTADO' : TransportEnum::BUS->getLabel() }}</h4>
-                                        <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
-                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 7 soles pasaje sentado</strong></span></div>
-                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 4 soles pasaje de pie</strong></span></div>
-                                            <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
-                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde el parque de la iglesia <strong> a las 8:00 am</strong> </span></div>
-                                            <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
-                                            <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
+                                <div class="flex flex-col lg:flex-row items-start lg:space-x-4 p-5">
+                                    <div class="flex items-start space-x-4 flex-1">
+                                        <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
+                                            <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
                                         </div>
-                                        <div class="mt-4 grid grid-cols-2 gap-4">
-                                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                                <div class="flex items-center justify-between">
-                                                    <span class="font-medium text-gray-900 text-sm">Asientos</span>
-                                                    <div class="text-right">
-                                                        <div class="text-2xl font-bold text-blue-600" x-text="`${baseAvailableSeated - ($wire.showSeatsInput ? (seats > 0 ? seats : 0) : 0)} / {{ $this->busSeatedCapacity }}`"></div>
-                                                        <div class="text-xs text-gray-500 -mt-1">disponibles</div>
-                                                    </div>
-                                                </div>
-                                                <div class="w-full bg-blue-200 rounded-full h-1.5 mt-2">
-                                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ $this->busSeatedCapacity > 0 ? (($this->busSeatedCapacity - $this->availableBusSeats) / $this->busSeatedCapacity) * 100 : 0 }}%"></div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ $this->isBusDisabled ? TransportEnum::BUS->getLabel().' - AGOTADO' : TransportEnum::BUS->getLabel() }}</h4>
+                                            <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
+                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 7 soles pasaje sentado</strong></span></div>
+                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 4 soles pasaje de pie</strong></span></div>
+                                                <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
+                                                <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde el parque de la iglesia <strong> a las 8:00 am</strong> </span></div>
+                                                <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
+                                                <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 grid grid-cols-2 gap-4 w-full lg:mt-0 lg:w-auto lg:flex-1">
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-gray-900 text-sm">Asientos</span>
+                                                <div class="text-right">
+                                                    <div class="text-2xl font-bold text-blue-600" x-text="`${baseAvailableSeated - ($wire.showSeatsInput ? (seats > 0 ? seats : 0) : 0)}`"></div>
+                                                    <div class="text-xs text-gray-500 -mt-1">/ {{ $this->busSeatedCapacity }}</div>
                                                 </div>
                                             </div>
-                                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
-                                                <div class="flex items-center justify-between">
-                                                    <span class="font-medium text-gray-900 text-sm">De Pie</span>
-                                                    <div class="text-right">
-                                                        <div class="text-2xl font-bold text-green-600" x-text="`${baseAvailableStanding - ($wire.showSeatsInput ? (standing > 0 ? standing : 0) : 0)} / {{ $this->busStandingCapacity }}`"></div>
-                                                        <div class="text-xs text-gray-500 -mt-1">disponibles</div>
-                                                    </div>
-                                                </div>
-                                                <div class="w-full bg-green-200 rounded-full h-1.5 mt-2">
-                                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $this->busStandingCapacity > 0 ? (($this->busStandingCapacity - $this->availableStandingSeats) / $this->busStandingCapacity) * 100 : 0 }}%"></div>
+                                            <div class="w-full bg-blue-200 rounded-full h-1.5 mt-2">
+                                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ $this->busSeatedCapacity > 0 ? (($this->busSeatedCapacity - $this->availableBusSeats) / $this->busSeatedCapacity) * 100 : 0 }}%"></div>
+                                            </div>
+                                            <p class="text-xs mt-1 text-center font-semibold text-blue-700" x-text="`¡Quedan ${baseAvailableSeated - ($wire.showSeatsInput ? (seats > 0 ? seats : 0) : 0)} asientos!`"></p>
+                                        </div>
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-gray-900 text-sm">De Pie</span>
+                                                <div class="text-right">
+                                                    <div class="text-2xl font-bold text-green-600" x-text="`${baseAvailableStanding - ($wire.showSeatsInput ? (standing > 0 ? standing : 0) : 0)}`"></div>
+                                                    <div class="text-xs text-gray-500 -mt-1">/ {{ $this->busStandingCapacity }}</div>
                                                 </div>
                                             </div>
+                                            <div class="w-full bg-green-200 rounded-full h-1.5 mt-2">
+                                                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $this->busStandingCapacity > 0 ? (($this->busStandingCapacity - $this->availableStandingSeats) / $this->busStandingCapacity) * 100 : 0 }}%"></div>
+                                            </div>
+                                            <p class="text-xs mt-1 text-center font-semibold text-green-700" x-text="`¡Quedan ${baseAvailableStanding - ($wire.showSeatsInput ? (standing > 0 ? standing : 0) : 0)} cupos!`"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -173,9 +177,9 @@
                             </div>
                             <div x-show="(seats > 0 || standing > 0)" class="text-center p-3 bg-yellow-100 border border-yellow-200 rounded-lg">
                                 <p class="font-semibold text-yellow-800">Monto total a pagar por pasajes:
-                                    <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 6 + (standing || 0) * 3 ).toFixed(2)}`"></span>
-                                    <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
+                                    <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 7 + (standing || 0) * 4 ).toFixed(2)}`"></span>
                                 </p>
+                                <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
                             </div>
                         </div>
 
@@ -291,14 +295,14 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         <div class="bg-blue-100 text-blue-800 p-4 rounded-lg flex flex-col justify-between">
                             <div><p class="text-3xl font-bold">{{ $this->totalBusSeated }}</p><p class="font-medium">Asientos Necesarios</p></div>
-                            <p class="text-xs mt-1">({{ $this->totalBusSeated }} x S/6 = S/{{ number_format($this->seatedBusIncome, 2) }})</p>
+                            <p class="text-xs mt-1">({{ $this->totalBusSeated }} x S/7 = S/{{ number_format($this->seatedBusIncome, 2) }})</p>
                         </div>
                         <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg flex flex-col justify-between">
                             <div><p class="text-3xl font-bold">{{ $this->totalBusStanding }}</p><p class="font-medium">Pasajeros de Pie</p></div>
-                            <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/3 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
+                            <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/4 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
                         </div>
                         <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p></div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto a recaudar</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto Recaudado</p></div>
                     </div>
                 </div>
 
@@ -318,22 +322,28 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
                                             <span>Nombre</span>
-                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                            @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle de Viaje</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
+                                            <span>Fecha</span>
+                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                        </a>
+                                    </th>
                                     <th scope="col" class="relative px-6 py-3"><span class="sr-only">Anular</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($participations as $p)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }} <span class="block text-xs text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         @if($p->transport === TransportEnum::BUS)
                                             <span>{{ $p->seats }} sentados, {{ $p->standing }} de pie</span>
-                                            <span class="block text-xs text-gray-500">(Total: S/ {{ number_format(($p->seats * 6) + ($p->standing * 3), 2) }})</span>
+                                            <span class="block text-xs text-gray-500">(Total: S/ {{ number_format(($p->seats * 7) + ($p->standing * 4), 2) }})</span>
                                         @else
                                             <span>1 participante</span>
                                         @endif
@@ -343,6 +353,7 @@
                                             {{ $p->transport->getLabel() }}
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="deleteParticipation({{ $p->id }})" wire:confirm="¿Estás seguro de que quieres anular este registro?" class="text-red-600 hover:text-red-900 cursor-pointer">Anular</button>
                                     </td>
