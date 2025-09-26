@@ -318,24 +318,18 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
                                             <span>Nombre</span>
-                                            @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle de Viaje</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
-                                            <span>Fecha</span>
-                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
-                                        </a>
-                                    </th>
                                     <th scope="col" class="relative px-6 py-3"><span class="sr-only">Anular</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($participations as $p)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }} <span class="block text-xs text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         @if($p->transport === TransportEnum::BUS)
                                             <span>{{ $p->seats }} sentados, {{ $p->standing }} de pie</span>
@@ -349,7 +343,6 @@
                                             {{ $p->transport->getLabel() }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="deleteParticipation({{ $p->id }})" wire:confirm="¿Estás seguro de que quieres anular este registro?" class="text-red-600 hover:text-red-900 cursor-pointer">Anular</button>
                                     </td>
