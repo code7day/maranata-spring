@@ -51,7 +51,7 @@
         {{-- @fluxAppearance --}}
 
         <!-- Scripts -->
-        @vite('resources/css/web.css')
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         <!-- Styles -->
 
         @stack('styles')
@@ -66,7 +66,6 @@
         @livewireScripts
         {{-- @fluxScripts --}}
         {{-- @filamentScripts --}}
-        @vite('resources/js/web.js')
         @stack('scripts')
     </body>
 </html>
