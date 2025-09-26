@@ -8,6 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Validation\Rules\Enum as EnumRule;
+use Carbon\Carbon;
 
 class SurveyMaranata extends Component
 {
@@ -25,6 +26,16 @@ class SurveyMaranata extends Component
 
     public string $reportPassword = '';
     public ?string $passwordError = null;
+
+    public string $deadlineIsoString;
+
+    public function mount()
+    {
+        // CORRECCIÓN: Se especifica la zona horaria 'America/Lima' al crear la fecha.
+        // Esto asegura que la fecha límite sea a las 2:00 PM hora de Perú.
+        $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(14, 0, 0)->toIso8601String();
+        $this->loadParticipations();
+    }
 
     public function updatedTransport(?TransportEnum $value)
     {
@@ -67,11 +78,6 @@ class SurveyMaranata extends Component
         'seats.min' => 'Debes reservar al menos 1 asiento.',
         'seats.max' => 'Solo puedes reservar un máximo de :max asientos disponibles.',
     ];
-
-    public function mount()
-    {
-        $this->loadParticipations();
-    }
 
     public function loadParticipations()
     {
@@ -152,14 +158,17 @@ class SurveyMaranata extends Component
     }
 
     #[Computed]
-    public function isBusDisabled()
+    public function isBusBookingOver()
     {
-        return $this->availableBusSeats <= 0;
+        return now()->gt(Carbon::parse($this->deadlineIsoString));
     }
 
-    /**
-     * NUEVO: Calcula el número de buses necesarios.
-     */
+    #[Computed]
+    public function isBusDisabled()
+    {
+        return $this->availableBusSeats <= 0 || $this->isBusBookingOver;
+    }
+
     #[Computed]
     public function busesNeeded()
     {
@@ -169,13 +178,10 @@ class SurveyMaranata extends Component
         return ceil($this->busParticipants / $this->busCapacity);
     }
 
-    /**
-     * NUEVO: Calcula los ingresos totales por pasajes de bus.
-     */
     #[Computed]
     public function busIncome()
     {
-        $passagePrice = 10; // S/ 10 por pasaje
+        $passagePrice = 10;
         return $this->busParticipants * $passagePrice;
     }
 
@@ -185,4 +191,3 @@ class SurveyMaranata extends Component
         return view('livewire.survey-maranata');
     }
 }
-

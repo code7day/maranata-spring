@@ -19,14 +19,48 @@
         0%, 100% { opacity: 1; }
         50% { opacity: .7; }
     }
+    .timer-box {
+        background: #1a202c;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        min-width: 60px;
+    }
 </style>
 @endpush
 
 <div x-data="{
         view: 'form',
         seats: @entangle('seats'),
-        baseAvailable: {{ $this->availableBusSeats }}
+        baseAvailable: {{ $this->availableBusSeats }},
+        // Lógica del contador
+        deadline: '{{ $this->deadlineIsoString }}',
+        timeLeft: { hours: '00', minutes: '00', seconds: '00' },
+        timerExpired: false,
+        initTimer() {
+            const endTime = new Date(this.deadline).getTime();
+            if (new Date().getTime() > endTime) {
+                this.timerExpired = true;
+                return;
+            }
+            const interval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    this.timerExpired = true;
+                    $wire.call('$refresh'); // Refresca el componente para deshabilitar el bus
+                    return;
+                }
+
+                this.timeLeft.hours = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                this.timeLeft.minutes = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                this.timeLeft.seconds = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+            }, 1000);
+        }
      }"
+     x-init="initTimer()"
      @participation-saved.window="view = 'success'; baseAvailable = $event.detail.availableSeats;"
      @report-unlocked.window="view = 'report'"
      class="w-full max-w-4xl mx-auto">
@@ -37,27 +71,40 @@
             <p class="text-lg text-white/90 mt-1 drop-shadow-md">Distrito Misionero de La Alameda</p>
         </div>
     </div>
-
     {{-- Vista del Formulario --}}
     <div x-show="view === 'form'" x-transition>
         <div class="relative z-10 -mt-12">
-            <div class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-gray-200/50">
+            <div class="bg-gray-50/80 backdrop-blur-sm shadow-xl rounded-2xl border border-gray-200/50">
                 <div class="p-6 sm:p-8">
+                    {{-- Reemplazo del título por el contador --}}
                     <div class="text-center mb-6">
-                        <h2 class="text-xl font-bold text-gray-900">Formulario de Participación</h2>
-                        <p class="text-base text-gray-600">Confirma tu asistencia a este evento especial del distrito.</p>
+                        <div x-show="!timerExpired">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">¡Reserva tu cupo para el bus ahora!</h2>
+                            <div class="flex justify-center items-center space-x-2 text-gray-900">
+                                <div class="timer-box"><span x-text="timeLeft.hours" class="text-3xl font-bold"></span><div class="text-xs">HRS</div></div>
+                                <span class="text-3xl font-bold">:</span>
+                                <div class="timer-box"><span x-text="timeLeft.minutes" class="text-3xl font-bold"></span><div class="text-xs">MIN</div></div>
+                                <span class="text-3xl font-bold">:</span>
+                                <div class="timer-box"><span x-text="timeLeft.seconds" class="text-3xl font-bold"></span><div class="text-xs">SEG</div></div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">El tiempo para asegurar tu asiento en el bus se acaba.</p>
+                        </div>
+                        <div x-show="timerExpired" x-cloak>
+                             <h2 class="text-xl font-bold text-red-600">El tiempo de reserva para el bus ha terminado.</h2>
+                             <p class="text-base text-gray-600">Aún puedes registrar tu participación con transporte individual.</p>
+                        </div>
                     </div>
 
                     <form wire:submit.prevent="save" class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="fullName" class="text-base font-medium text-gray-800">Nombre y Apellidos</label>
-                                <input wire:model.defer="fullName" id="fullName" type="text" placeholder="Ingresa tu nombre completo" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
+                                <input wire:model.defer="fullName" id="fullName" type="text" placeholder="Ingresa tu nombre completo" class="h-12 text-base w-full rounded-lg border bg-white border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500 px-4">
                                 @error('fullName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
                             <div class="space-y-2">
                                 <label for="cellphone" class="text-base font-medium text-gray-800">Celular (WhatsApp)</label>
-                                <input wire:model.defer="cellphone" id="cellphone" type="tel" placeholder="Ej: 987654321" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
+                                <input wire:model.defer="cellphone" id="cellphone" type="tel" placeholder="Ej: 987654321" class="h-12 text-base w-full rounded-lg border bg-white border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500 px-4">
                                 @error('cellphone') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -65,7 +112,7 @@
                         <div class="space-y-4">
                             <label class="text-base font-medium text-gray-800">Elige tu opción de transporte</label>
                             <div @click="$wire.set('transport', '{{ TransportEnum::BUS->value }}')"
-                                class="rounded-xl border-2 transition-all {{ $this->isBusDisabled ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
+                                class="rounded-xl border-4 transition-all {{ $this->isBusDisabled ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'bg-white shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
                                     <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
                                         <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
@@ -110,7 +157,7 @@
                             </div>
 
                             <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
-                                class="rounded-xl border-2 transition-all cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
+                                class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
                                     <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><span class="text-2xl">🚗</span></div>
                                     <div class="flex-1">
@@ -131,7 +178,7 @@
                             <label for="seats" class="text-base font-medium">Número de Participantes</label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">👥</span>
-                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
+                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
                             </div>
                             <p class="text-sm text-gray-600">Incluye familiares que te acompañarán.
                                 @if(!$this->isBusDisabled)<span class="block text-orange-600 font-medium mt-1">Máximo {{ $this->maxSeatsAllowed }} personas por reserva.</span>@endif
@@ -139,7 +186,7 @@
                             @error('seats') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        <button type="submit" class="w-full h-12 text-base font-semibold text-white rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" wire:loading.attr="disabled">
+                        <button type="submit" class="w-full h-12 text-base font-semibold text-white cursor-pointer rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 " wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">Confirmar Participación</span>
                             <span wire:loading wire:target="save">Registrando...</span>
                         </button>
@@ -163,7 +210,7 @@
                     <h3 class="mt-5 text-2xl leading-6 font-bold text-gray-900">Acceso al Reporte</h3>
                     <p class="mt-2 text-base text-gray-600">Por favor, ingresa la clave para ver las estadísticas.</p>
                     <div class="mt-6 max-w-sm mx-auto">
-                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
+                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500 px-4">
                         @if($passwordError)
                             <p class="text-red-500 text-sm mt-2">{{ $passwordError }}</p>
                         @endif
