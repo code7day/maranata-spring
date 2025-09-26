@@ -120,7 +120,7 @@
                                     <div class="flex-1">
                                         <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ $this->isBusDisabled ? TransportEnum::BUS->getLabel().' - AGOTADO' : TransportEnum::BUS->getLabel() }}</h4>
                                         <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
-                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 10 soles Pasaje</strong>(Pasaje de ida y vuelta)</span></div>
+                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 10 soles Pasaje</strong> (Incluye ida y vuelta)</span></div>
                                             <div class="flex items-center space-x-2"><span>💰</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                             <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde la puerta de la iglesia</span></div>
                                             <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
