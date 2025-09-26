@@ -324,17 +324,11 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
                                             <span>Nombre / Contacto</span>
-                                            @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle de Viaje</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
-                                            <span>Fecha de Registro</span>
-                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
-                                        </a>
-                                    </th>
                                     <th scope="col" class="relative px-6 py-3"><span class="sr-only">Anular</span></th>
                                 </tr>
                             </thead>
@@ -343,7 +337,7 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {{ $p->full_name }}
-                                        <span class="block text-xs text-gray-500">{{ $p->cellphone }}</span>
+                                        <span class="block text-xs text-gray-500"><a href="tel:{{ $p->cellphone }}" class="text-blue-400">{{ $p->cellphone }}</a> - {{ \Carbon\Carbon::parse($p->created_at)->format('d/m, h:i a') }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         @if($p->transport === TransportEnum::BUS)
