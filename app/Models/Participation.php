@@ -27,6 +27,7 @@ class Participation extends Model
         'cellphone',
         'transport',
         'seats',
+        'standing',
     ];
 
     /**

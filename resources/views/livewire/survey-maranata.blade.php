@@ -32,7 +32,9 @@
 <div x-data="{
         view: 'form',
         seats: @entangle('seats'),
-        baseAvailable: {{ $this->availableBusSeats }},
+        standing: @entangle('standing'),
+        baseAvailableSeated: {{ $this->availableBusSeats }},
+        baseAvailableStanding: {{ $this->availableStandingSeats }},
         deadline: '{{ $this->deadlineIsoString }}',
         timeLeft: { hours: '00', minutes: '00', seconds: '00' },
         timerExpired: false,
@@ -45,14 +47,12 @@
             const interval = setInterval(() => {
                 const now = new Date().getTime();
                 const distance = endTime - now;
-
                 if (distance < 0) {
                     clearInterval(interval);
                     this.timerExpired = true;
                     $wire.call('$refresh');
                     return;
                 }
-
                 this.timeLeft.hours = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
                 this.timeLeft.minutes = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
                 this.timeLeft.seconds = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
@@ -60,7 +60,7 @@
         }
      }"
      x-init="initTimer()"
-     @participation-saved.window="view = 'success'; baseAvailable = $event.detail.availableSeats;"
+     @participation-saved.window="view = 'success'; baseAvailableSeated = $event.detail.availableSeats; baseAvailableStanding = $event.detail.availableStanding;"
      @report-unlocked.window="view = 'report'"
      class="w-full max-w-4xl mx-auto">
     <div class="relative w-full h-48 md:h-48 md:rounded-t-2xl bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center text-white overflow-hidden">
@@ -119,44 +119,63 @@
                                     <div class="flex-1">
                                         <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ $this->isBusDisabled ? TransportEnum::BUS->getLabel().' - AGOTADO' : TransportEnum::BUS->getLabel() }}</h4>
                                         <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
-                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 10 soles pasaje</strong> (Incluye ida y vuelta)</span></div>
+                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 7 soles pasaje sentado</strong></span></div>
+                                            <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 4 soles pasaje de pie</strong></span></div>
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                             <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde el parque de la iglesia <strong> a las 8:00 am</strong> </span></div>
                                             <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
                                             <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
                                         </div>
-                                        <div class="mt-2 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <div class="flex items-center space-x-2"><span class="font-medium text-gray-900 text-sm">Disponibilidad</span></div>
-                                                <div class="text-right">
-                                                    <div class="text-2xl font-bold {{ $this->isBusDisabled ? 'text-red-600' : 'text-orange-600' }}"
-                                                         x-text="$wire.showSeatsInput ? (baseAvailable - (seats > 0 ? seats : 0)) : baseAvailable">
+
+                                        {{-- NUEVO: Indicadores de Disponibilidad con Barra de Progreso --}}
+                                        <div class="mt-4 grid grid-cols-2 gap-4">
+                                            <!-- Indicador Asientos -->
+                                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium text-gray-900 text-sm">Asientos</span>
+                                                    <div class="text-right">
+                                                        <div class="text-2xl font-bold text-blue-600" x-text="$wire.showSeatsInput ? (baseAvailableSeated - (seats > 0 ? seats : 0)) : baseAvailableSeated"></div>
+                                                        <div class="text-xs text-gray-500 -mt-1">disponibles</div>
                                                     </div>
-                                                    <div class="text-xs text-gray-500 -mt-1">{{ $this->isBusDisabled ? 'agotado' : 'disponibles' }}</div>
+                                                </div>
+                                                <div class="w-full bg-blue-200 rounded-full h-1.5 mt-2">
+                                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ $this->busSeatedCapacity > 0 ? (($this->busSeatedCapacity - $this->availableBusSeats) / $this->busSeatedCapacity) * 100 : 0 }}%"></div>
                                                 </div>
                                             </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                                <div class="h-full bg-gradient-to-r from-orange-400 to-red-500 transition-all duration-300" style="width: {{ $this->busCapacity > 0 ? (($this->busCapacity - $this->availableBusSeats) / $this->busCapacity) * 100 : 0 }}%"></div>
-                                            </div>
-                                            <div class="flex justify-between text-xs mt-1">
-                                                <span class="text-gray-600">{{ $this->busCapacity - $this->availableBusSeats }} de {{ $this->busCapacity }} reservados</span>
-                                                @if(!$this->isBusDisabled) <span class="font-bold text-orange-600" x-text="`¡Solo ${$wire.showSeatsInput ? (baseAvailable - (seats > 0 ? seats : 0)) : baseAvailable} cupos!`"></span> @endif
+                                            <!-- Indicador De Pie -->
+                                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium text-gray-900 text-sm">De Pie</span>
+                                                    <div class="text-right">
+                                                        <div class="text-2xl font-bold text-green-600" x-text="$wire.showSeatsInput ? (baseAvailableStanding - (standing > 0 ? standing : 0)) : baseAvailableStanding"></div>
+                                                        <div class="text-xs text-gray-500 -mt-1">disponibles</div>
+                                                    </div>
+                                                </div>
+                                                <div class="w-full bg-green-200 rounded-full h-1.5 mt-2">
+                                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $this->busStandingCapacity > 0 ? (($this->busStandingCapacity - $this->availableStandingSeats) / $this->busStandingCapacity) * 100 : 0 }}%"></div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="mt-3 flex items-center space-x-2">
-                                            @if($this->isBusDisabled)
-                                                <div class="text-xs bg-red-100 text-red-800 px-3 py-1 rounded-full">🚫 Sin cupos disponibles</div>
-                                            @else
-                                                <div class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full">¡En comunión desde el viaje!</div>
-                                                @if($this->availableBusSeats <= 15)
-                                                    <div class="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full animate-pulse-slow">⚡ ¡Últimos cupos!</div>
-                                                @endif
-                                            @endif
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
 
+                            <div x-show="$wire.showSeatsInput" x-transition class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label for="seats" class="text-base font-medium">¿Cuántos asientos reservados?</label>
+                                        <input x-model.number="seats" id="seats" type="number" min="0" max="{{ $this->maxSeatedAllowed }}" class="h-12 text-base pl-4 pr-4 w-full rounded-lg border-2 border-blue-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->availableBusSeats <= 0) disabled @endif>
+                                        @error('seats') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="standing" class="text-base font-medium">¿Cuántos pasajeros de pie?</label>
+                                        <input x-model.number="standing" id="standing" type="number" min="0" max="{{ $this->maxStandingAllowed }}" class="h-12 text-base pl-4 pr-4 w-full rounded-lg border-2 border-green-300 shadow-inner focus:border-green-500 focus:ring-green-500" @if($this->availableStandingSeats <= 0) disabled @endif>
+                                        @error('standing') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600">Total de personas en tu reserva: <span x-text="(seats || 0) + (standing || 0)" class="font-bold"></span></p>
+                            </div>
                             <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
                                 class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 !bg-green-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
@@ -176,17 +195,6 @@
                         </div>
                         @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
-                        <div x-show="$wire.showSeatsInput" x-transition class="space-y-2">
-                            <label for="seats" class="text-base font-medium">Cuántos asientos reservará?</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">👥</span>
-                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-2 border-blue-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
-                            </div>
-                            <p class="text-sm text-gray-600">Incluye familiares que te acompañarán.
-                                @if(!$this->isBusDisabled)<span class="block text-orange-600 font-medium mt-1">Máximo {{ $this->maxSeatsAllowed }} personas por reserva.</span>@endif
-                            </p>
-                            @error('seats') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                        </div>
 
                         <button type="submit" class="w-full h-12 text-base font-semibold text-white cursor-pointer rounded-lg shadow-md btn-gradient-submit focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 " wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">Confirmar Participación</span>
@@ -195,7 +203,7 @@
                     </form>
 
                     <div class="mt-6 pt-6 border-t border-gray-200 text-center">
-                        <a href="#" @click.prevent="$wire.isReportUnlocked ? view = 'report' : view = 'password'" class="text-sm text-blue-600 hover:text-blue-500 underline underline-offset-4">Ver reporte de participación →</a>
+                        <a href="#" @click.prevent="$wire.refreshReportData(); $wire.isReportUnlocked ? view = 'report' : view = 'password'" class="text-sm text-blue-600 hover:text-blue-500 underline underline-offset-4">Ver reporte de participación →</a>
                     </div>
                 </div>
             </div>
@@ -243,7 +251,7 @@
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
-                        <button @click="$wire.isReportUnlocked ? view = 'report' : view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
+                        <button @click="$wire.refreshReportData(); $wire.isReportUnlocked ? view = 'report' : view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
                             Ver Reporte
                         </button>
                         <button @click="view = 'form'" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
@@ -274,10 +282,29 @@
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center"><span class="text-xl mr-3">🚌</span> Información para Contratar Bus</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                        <div class="bg-blue-100 text-blue-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busSeats }}</p><p class="font-medium">Asientos Necesarios</p></div>
-                        <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busCapacity }} asientos</p></div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Monto por Pasajes</p></div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                        <div class="bg-blue-100 text-blue-800 p-4 rounded-lg flex flex-col justify-between">
+                            <div>
+                                <p class="text-3xl font-bold">{{ $this->totalBusSeated }}</p>
+                                <p class="font-medium">Asientos Necesarios</p>
+                            </div>
+                            <p class="text-xs mt-1">({{ $this->totalBusSeated }} x S/6 = S/{{ number_format($this->seatedBusIncome, 2) }})</p>
+                        </div>
+                        <div class="bg-cyan-100 text-cyan-800 p-4 rounded-lg flex flex-col justify-between">
+                            <div>
+                                <p class="text-3xl font-bold">{{ $this->totalBusStanding }}</p>
+                                <p class="font-medium">Pasajeros de Pie</p>
+                            </div>
+                            <p class="text-xs mt-1">({{ $this->totalBusStanding }} x S/3 = S/{{ number_format($this->standingBusIncome, 2) }})</p>
+                        </div>
+                        <div class="bg-green-100 text-green-800 p-4 rounded-lg">
+                            <p class="text-3xl font-bold">{{ $this->busesNeeded }}</p>
+                            <p class="font-medium">Bus(es) de {{ $this->busSeatedCapacity }} asientos</p>
+                        </div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
+                            <p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p>
+                            <p class="font-medium">Monto Recaudado</p>
+                        </div>
                     </div>
                 </div>
 
@@ -300,7 +327,7 @@
                                             @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participantes</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle de Viaje</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
@@ -314,7 +341,13 @@
                                 @forelse($participations as $p)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $p->transport === TransportEnum::BUS ? $p->seats : 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        @if($p->transport === TransportEnum::BUS)
+                                            <span>{{ $p->seats }} sentados</span>, <span>{{ $p->standing }} de pie</span>
+                                        @else
+                                            <span>1 participante</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $p->transport === TransportEnum::BUS ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
                                             {{ $p->transport->getLabel() }}
@@ -331,7 +364,6 @@
                         </table>
                      </div>
                 </div>
-
             </div>
         </div>
     </div>
