@@ -131,7 +131,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mt-4 grid grid-cols-2 gap-4 w-full lg:mt-0 lg:w-auto lg:flex-1">
+                                    <div class="mt-4 grid  lg:grid-cols-1 grid-cols-2 gap-4 w-full lg:mt-0 lg:w-auto lg:flex-1">
                                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                                             <div class="flex items-center justify-between">
                                                 <span class="font-medium text-gray-900 text-sm">Asientos</span>
