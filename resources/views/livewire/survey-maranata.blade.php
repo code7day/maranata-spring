@@ -122,7 +122,8 @@
                                         <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
                                             <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 10 soles pasaje</strong> (Incluye ida y vuelta)</span></div>
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
-                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde la puerta de la iglesia</span></div>
+                                            <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde la puerta de la iglesia <strong>(Sábado 27, 8:00 am)</strong> </span></div>
+                                            <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
                                             <div class="flex items-center space-x-2"><span>❤️</span><span>Viajemos juntos como familia</span></div>
                                         </div>
                                         <div class="mt-4 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3">
@@ -167,6 +168,7 @@
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                             <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento</span></div>
                                             <div class="flex items-center space-x-2"><span>🕐</span><span>Horario flexible de llegada</span></div>
+                                            <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
                                         </div>
                                         <div class="mt-3 text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full inline-block">Mayor flexibilidad personal</div>
                                     </div>
