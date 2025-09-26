@@ -68,7 +68,7 @@
         <div class="absolute inset-0 bg-black/30"></div>
         <div class="relative z-10 text-center p-4 -mt-5 mb-5">
             <h1 class="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">Maranata Spring 2025</h1>
-            <p class="text-lg text-white/90 mt-1 drop-shadow-md">Distrito Misionero de La Alameda</p>
+            <p class="text-lg text-white/90 mt-1 drop-shadow-md">Distrito Misionero de La Alameda en el  <a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-yellow-300 underline">Club Portada del Sol</a></p>
         </div>
     </div>
     {{-- Vista del Formulario --}}
@@ -165,7 +165,7 @@
                                     <div class="flex-1">
                                         <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ TransportEnum::INDIVIDUAL->getLabel() }}</h4>
                                         <div class="space-y-2 text-sm text-gray-600">
-                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento</span></div>
+                                            <div class="flex items-center space-x-2"><span>🚗</span><span>Llegas directamente al lugar del evento</span> (<a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-blue-500 underline">Club Portada del Sol</a>)</div>
                                             <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                             <div class="flex items-center space-x-2"><span>🕐</span><span>Horario flexible de llegada</span></div>
                                             <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>
