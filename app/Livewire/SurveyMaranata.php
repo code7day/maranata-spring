@@ -40,7 +40,7 @@ class SurveyMaranata extends Component
 
     public function mount()
     {
-        $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(16, 0, 0)->toIso8601String();
+        $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(17, 00, 0)->toIso8601String();
 
         if (Session::get('report_unlocked')) {
             $this->isReportUnlocked = true;
