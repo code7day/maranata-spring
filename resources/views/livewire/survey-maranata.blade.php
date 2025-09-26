@@ -52,12 +52,12 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="fullName" class="text-base font-medium text-gray-800">Nombre y Apellidos</label>
-                                <input wire:model.defer="fullName" id="fullName" type="text" placeholder="Ingresa tu nombre completo" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4">
+                                <input wire:model.defer="fullName" id="fullName" type="text" placeholder="Ingresa tu nombre completo" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
                                 @error('fullName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
                             <div class="space-y-2">
                                 <label for="cellphone" class="text-base font-medium text-gray-800">Celular (WhatsApp)</label>
-                                <input wire:model.defer="cellphone" id="cellphone" type="tel" placeholder="Ej: 987654321" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4">
+                                <input wire:model.defer="cellphone" id="cellphone" type="tel" placeholder="Ej: 987654321" class="h-12 text-base w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
                                 @error('cellphone') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                             <label for="seats" class="text-base font-medium">Número de Participantes</label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">👥</span>
-                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" @if($this->isBusDisabled) disabled @endif>
+                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
                             </div>
                             <p class="text-sm text-gray-600">Incluye familiares que te acompañarán.
                                 @if(!$this->isBusDisabled)<span class="block text-orange-600 font-medium mt-1">Máximo {{ $this->maxSeatsAllowed }} personas por reserva.</span>@endif
@@ -157,19 +157,19 @@
         <div class="relative z-10 -mt-12">
             <div class="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-gray-200/50">
                 <div class="p-8 sm:p-12 text-center">
-                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100">
-                        <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
+                        <svg class="h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                     </div>
                     <h3 class="mt-5 text-2xl leading-6 font-bold text-gray-900">Acceso al Reporte</h3>
                     <p class="mt-2 text-base text-gray-600">Por favor, ingresa la clave para ver las estadísticas.</p>
                     <div class="mt-6 max-w-sm mx-auto">
-                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4">
+                        <input wire:model.defer="reportPassword" @keydown.enter.prevent="$wire.checkPassword()" type="password" placeholder="Ingresa la clave" class="h-12 text-base text-center w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4">
                         @if($passwordError)
                             <p class="text-red-500 text-sm mt-2">{{ $passwordError }}</p>
                         @endif
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
-                        <button wire:click="checkPassword" wire:loading.attr="disabled" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none">
+                        <button wire:click="checkPassword" wire:loading.attr="disabled" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
                             <span wire:loading.remove wire:target="checkPassword">Confirmar</span>
                             <span wire:loading wire:target="checkPassword">Verificando...</span>
                         </button>
@@ -194,7 +194,7 @@
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de comunión!</p>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
-                        <button @click="view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none">
+                        <button @click="view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
                             Ver Reporte
                         </button>
                         <button @click="view = 'form'" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
@@ -211,7 +211,7 @@
         <div class="relative z-10 -mt-12">
             <div class="bg-white p-8 rounded-2xl shadow-lg">
                 <div class="text-center mb-8">
-                    <a href="#" @click.prevent="view = 'form'" wire:click.prevent="resetForm" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 absolute top-8 left-8">← Volver al Formulario</a>
+                    <a href="#" @click.prevent="view = 'form'" wire:click.prevent="resetForm" class="text-sm font-medium text-blue-600 hover:text-blue-500 absolute top-8 left-8">← Volver al Formulario</a>
                     <h2 class="text-3xl font-bold tracking-tight">Reporte de Participación</h2>
                     <p class="mt-2 text-lg text-gray-600">Maranata Spring 2025</p>
                 </div>
