@@ -178,7 +178,7 @@
                         @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                         <div x-show="$wire.showSeatsInput" x-transition class="space-y-2">
-                            <label for="seats" class="text-base font-medium">Cuántos asientos a reservará?</label>
+                            <label for="seats" class="text-base font-medium">Cuántos asientos reservará?</label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">👥</span>
                                 <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-2 border-blue-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
