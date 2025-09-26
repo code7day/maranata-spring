@@ -112,7 +112,7 @@
                         <div class="space-y-4">
                             <label class="text-base font-medium text-gray-800">Elige tu opción de transporte</label>
                             <div @click="$wire.set('transport', '{{ TransportEnum::BUS->value }}')"
-                                class="rounded-xl border-4 transition-all {{ $this->isBusDisabled ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'bg-white shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
+                                class="rounded-xl border-4 transition-all bg-white  {{ $this->isBusDisabled ? 'border-gray-300 !bg-gray-100 cursor-not-allowed opacity-70 pointer-events-none' : 'shadow-md cursor-pointer hover:border-blue-300' }} {{ $transport?->value === TransportEnum::BUS->value ? 'border-blue-500 !bg-blue-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
                                     <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center {{ $this->isBusDisabled ? 'bg-gray-200' : 'bg-blue-100' }}">
                                         <span class="text-2xl">{{ $this->isBusDisabled ? '🚫' : '🚌' }}</span>
@@ -157,7 +157,7 @@
                             </div>
 
                             <div @click="$wire.set('transport', '{{ TransportEnum::INDIVIDUAL->value }}')"
-                                class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
+                                class="rounded-xl border-4 transition-all bg-white shadow-md cursor-pointer hover:border-green-300 {{ $transport?->value === TransportEnum::INDIVIDUAL->value ? 'border-green-500 !bg-green-50' : 'border-gray-200' }}">
                                 <div class="flex items-start space-x-4 p-5">
                                     <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"><span class="text-2xl">🚗</span></div>
                                     <div class="flex-1">
@@ -175,10 +175,10 @@
                         @error('transport') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
 
                         <div x-show="$wire.showSeatsInput" x-transition class="space-y-2">
-                            <label for="seats" class="text-base font-medium">Número de Participantes</label>
+                            <label for="seats" class="text-base font-medium">Cuántos asientos a reservará?</label>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">👥</span>
-                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border border-gray-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
+                                <input x-model.number.debounce.300ms="seats" id="seats" type="number" min="1" max="{{ $this->maxSeatsAllowed }}" class="h-12 text-base pl-10 pr-4 w-full rounded-lg border-2 border-blue-300 shadow-inner focus:border-blue-500 focus:ring-blue-500" @if($this->isBusDisabled) disabled @endif>
                             </div>
                             <p class="text-sm text-gray-600">Incluye familiares que te acompañarán.
                                 @if(!$this->isBusDisabled)<span class="block text-orange-600 font-medium mt-1">Máximo {{ $this->maxSeatsAllowed }} personas por reserva.</span>@endif
