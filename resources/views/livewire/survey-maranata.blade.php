@@ -265,15 +265,31 @@
                     <p class="mt-2 text-lg text-gray-600">Maranata Spring 2025</p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-2 sm:space-y-0">
-                    <div class="flex space-x-1 bg-gray-200 p-1 rounded-lg">
-                        <button wire:click="filter('all')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'all' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Todos</button>
-                        <button wire:click="filter('bus')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'bus' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">En Bus</button>
-                        <button wire:click="filter('individual')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'individual' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Individual</button>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center">
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm"><p class="text-3xl font-bold">{{ $this->totalParticipants }}</p><p class="text-sm text-gray-600">Total Participantes</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm"><p class="text-3xl font-bold">{{ $this->totalBusParticipants }}</p><p class="text-sm text-gray-600">Transporte Comunitario</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm"><p class="text-3xl font-bold">{{ $this->totalOwnParticipants }}</p><p class="text-sm text-gray-600">Transporte Personal</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm"><p class="text-3xl font-bold">{{ $this->totalRegistrations }}</p><p class="text-sm text-gray-600">Total Registros</p></div>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center"><span class="text-xl mr-3">🚌</span> Información para Contratar Bus</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div class="bg-blue-100 text-blue-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busSeats }}</p><p class="font-medium">Asientos Necesarios</p></div>
+                        <div class="bg-green-100 text-green-800 p-4 rounded-lg"><p class="text-3xl font-bold">{{ $this->busesNeeded }}</p><p class="font-medium">Bus(es) de {{ $this->busCapacity }} asientos</p></div>
+                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg"><p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p><p class="font-medium">Ingresos por Pasajes</p></div>
                     </div>
                 </div>
 
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
+                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Lista de Participantes Registrados</h3>
+                        <div class="flex space-x-1 bg-gray-200 p-1 rounded-lg mt-2 sm:mt-0">
+                            <button wire:click.prevent="filter('all')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'all' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Todos</button>
+                            <button wire:click.prevent="filter('bus')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'bus' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">En Bus</button>
+                            <button wire:click.prevent="filter('individual')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'individual' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Individual</button>
+                        </div>
+                     </div>
                      <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -281,18 +297,21 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
                                             <span>Nombre</span>
-                                            @if($sortBy === 'full_name')
-                                                <span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>
-                                            @endif
+                                            @if($sortBy === 'full_name')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
                                         </a>
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participantes</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="#" wire:click.prevent="sortBy('created_at')" class="flex items-center space-x-1">
+                                            <span>Fecha</span>
+                                            @if($sortBy === 'created_at')<span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>@endif
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($this->participations as $p)
+                                @forelse($participations as $p)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $p->transport === TransportEnum::BUS ? $p->seats : 1 }}</td>
@@ -356,7 +375,9 @@
             }
         };
 
-        initOrUpdateChart(@json($this->busParticipants), @json($this->ownParticipants));
+        let initialBus = @json($this->totalBusParticipants);
+        let initialOwn = @json($this->totalOwnParticipants);
+        initOrUpdateChart(initialBus, initialOwn);
 
         Livewire.on('updateChart', ({ bus, own }) => {
             initOrUpdateChart(bus, own);

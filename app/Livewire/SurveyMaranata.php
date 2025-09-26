@@ -10,15 +10,16 @@ use Livewire\Attributes\Computed;
 use Illuminate\Validation\Rules\Enum as EnumRule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use Livewire\WithPagination;
 
 class SurveyMaranata extends Component
 {
+    use WithPagination;
+
     public $fullName = '';
     public $cellphone = '';
     public ?TransportEnum $transport = null;
     public $seats = 1;
-
-    public $participations = [];
 
     public bool $showSeatsInput = false;
 
@@ -31,7 +32,7 @@ class SurveyMaranata extends Component
     public string $deadlineIsoString;
     public bool $isReportUnlocked = false;
 
-    // CORRECCIÓN: Se añaden las propiedades que faltaban para el reporte
+    // Propiedades para el reporte
     public string $filterBy = 'all';
     public string $sortBy = 'created_at';
     public string $sortDirection = 'desc';
@@ -43,22 +44,13 @@ class SurveyMaranata extends Component
         if (Session::get('report_unlocked')) {
             $this->isReportUnlocked = true;
         }
-
-        $this->loadParticipations();
-    }
-
-    public function loadParticipations()
-    {
-        // El ordenamiento y filtro ahora se manejan en la propiedad computada `filteredParticipations`
-        // por lo que esta función solo necesita cargar los datos sin procesar.
-        $this->participations = Participation::all();
-        $this->dispatch('updateChart', bus: $this->busParticipants, own: $this->ownParticipants);
     }
 
     // --- Funciones para el Reporte ---
     public function filter($type)
     {
         $this->filterBy = $type;
+        $this->resetPage();
     }
 
     public function sortBy($field)
@@ -71,7 +63,6 @@ class SurveyMaranata extends Component
         $this->sortBy = $field;
     }
     // --- Fin de Funciones ---
-
 
     public function updatedTransport(?TransportEnum $value)
     {
@@ -87,7 +78,7 @@ class SurveyMaranata extends Component
     #[Computed]
     public function maxSeatsAllowed()
     {
-        return min($this->maxSeatsPerReservation, $this->availableBusSeats);
+        return min($this->maxSeatsPerReservation, $this->availableBusSeats());
     }
 
     protected function rules()
@@ -144,41 +135,47 @@ class SurveyMaranata extends Component
             'seats' => $seatsToSave,
         ]);
 
-        $this->loadParticipations();
-        $this->dispatch('participation-saved', availableSeats: $this->availableBusSeats);
+        $this->dispatch('participation-saved', availableSeats: $this->availableBusSeats());
         $this->resetForm();
+    }
+
+    // --- INDICADORES GLOBALES (NO CAMBIAN CON FILTROS) ---
+    #[Computed]
+    public function allParticipations()
+    {
+        return Participation::all();
     }
 
     #[Computed]
     public function totalParticipants()
     {
-        $total = 0;
-        foreach ($this->participations as $participation) {
-            if ($participation->transport === TransportEnum::INDIVIDUAL) {
-                $total += 1;
-            } elseif ($participation->transport === TransportEnum::BUS) {
-                $total += (int) $participation->seats;
-            }
-        }
-        return $total;
+        return $this->allParticipations->sum(function ($p) {
+            return $p->transport === TransportEnum::INDIVIDUAL ? 1 : (int) $p->seats;
+        });
     }
 
     #[Computed]
-    public function busParticipants()
+    public function totalBusParticipants()
     {
-        return $this->participations->where('transport', TransportEnum::BUS)->sum('seats');
+        return $this->allParticipations->where('transport', TransportEnum::BUS)->sum('seats');
     }
 
     #[Computed]
-    public function ownParticipants()
+    public function totalOwnParticipants()
     {
-        return $this->participations->where('transport', TransportEnum::INDIVIDUAL)->count();
+        return $this->allParticipations->where('transport', TransportEnum::INDIVIDUAL)->count();
+    }
+
+    #[Computed]
+    public function totalRegistrations()
+    {
+        return $this->allParticipations->count();
     }
 
     #[Computed]
     public function busSeats()
     {
-        return Participation::where('transport', TransportEnum::BUS)->sum('seats');
+        return $this->totalBusParticipants;
     }
 
     #[Computed]
@@ -202,9 +199,7 @@ class SurveyMaranata extends Component
     #[Computed]
     public function busesNeeded()
     {
-        if ($this->busSeats <= 0) {
-            return 0;
-        }
+        if ($this->busSeats <= 0) { return 0; }
         return ceil($this->busSeats / $this->busCapacity);
     }
 
@@ -214,17 +209,10 @@ class SurveyMaranata extends Component
         $passagePrice = 10;
         return $this->busSeats * $passagePrice;
     }
+    // --- FIN DE INDICADORES GLOBALES ---
 
     #[Layout('components.layouts.web')]
     public function render()
-    {
-        return view('livewire.survey-maranata', [
-            'participationsList' => $this->filteredParticipations()
-        ]);
-    }
-
-    #[Computed(persist: true)]
-    public function filteredParticipations()
     {
         $query = Participation::query();
 
@@ -236,7 +224,16 @@ class SurveyMaranata extends Component
 
         $query->orderBy($this->sortBy, $this->sortDirection);
 
-        return $query->get();
+        $participations = $query->get();
+
+        // Se calculan los datos para el gráfico basados en la lista filtrada
+        $busChartCount = $participations->where('transport', TransportEnum::BUS)->sum('seats');
+        $ownChartCount = $participations->where('transport', TransportEnum::INDIVIDUAL)->count();
+        $this->dispatch('updateChart', bus: $busChartCount, own: $ownChartCount);
+
+        return view('livewire.survey-maranata', [
+            'participations' => $participations
+        ]);
     }
 }
 
