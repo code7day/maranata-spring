@@ -352,7 +352,6 @@
                                             {{ $p->transport->getLabel() }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($p->created_at)->format('d/m/Y, h:i a') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="deleteParticipation({{ $p->id }})" wire:confirm="¿Estás seguro de que quieres anular este registro?" class="text-red-600 hover:text-red-900 cursor-pointer">Anular</button>
                                     </td>
