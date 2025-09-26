@@ -9,6 +9,7 @@ use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Validation\Rules\Enum as EnumRule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 class SurveyMaranata extends Component
 {
@@ -22,20 +23,55 @@ class SurveyMaranata extends Component
     public bool $showSeatsInput = false;
 
     public int $busCapacity = 45;
-    public int $maxSeatsPerReservation = 7;
+    public int $maxSeatsPerReservation = 10;
 
     public string $reportPassword = '';
     public ?string $passwordError = null;
 
     public string $deadlineIsoString;
+    public bool $isReportUnlocked = false;
+
+    // CORRECCIÓN: Se añaden las propiedades que faltaban para el reporte
+    public string $filterBy = 'all';
+    public string $sortBy = 'created_at';
+    public string $sortDirection = 'desc';
 
     public function mount()
     {
-        // CORRECCIÓN: Se especifica la zona horaria 'America/Lima' al crear la fecha.
-        // Esto asegura que la fecha límite sea a las 2:00 PM hora de Perú.
         $this->deadlineIsoString = Carbon::today('America/Lima')->setTime(14, 0, 0)->toIso8601String();
+
+        if (Session::get('report_unlocked')) {
+            $this->isReportUnlocked = true;
+        }
+
         $this->loadParticipations();
     }
+
+    public function loadParticipations()
+    {
+        // El ordenamiento y filtro ahora se manejan en la propiedad computada `filteredParticipations`
+        // por lo que esta función solo necesita cargar los datos sin procesar.
+        $this->participations = Participation::all();
+        $this->dispatch('updateChart', bus: $this->busParticipants, own: $this->ownParticipants);
+    }
+
+    // --- Funciones para el Reporte ---
+    public function filter($type)
+    {
+        $this->filterBy = $type;
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortBy === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortBy = $field;
+    }
+    // --- Fin de Funciones ---
+
 
     public function updatedTransport(?TransportEnum $value)
     {
@@ -79,17 +115,13 @@ class SurveyMaranata extends Component
         'seats.max' => 'Solo puedes reservar un máximo de :max asientos disponibles.',
     ];
 
-    public function loadParticipations()
-    {
-        $this->participations = Participation::orderBy('created_at', 'desc')->get();
-        $this->dispatch('updateChart', bus: $this->busParticipants, own: $this->ownParticipants);
-    }
-
     public function checkPassword()
     {
         if ($this->reportPassword === 'mrnt$2025') {
             $this->passwordError = null;
             $this->reportPassword = '';
+            Session::put('report_unlocked', true);
+            $this->isReportUnlocked = true;
             $this->dispatch('report-unlocked');
         } else {
             $this->passwordError = 'La clave ingresada es incorrecta.';
@@ -113,9 +145,7 @@ class SurveyMaranata extends Component
         ]);
 
         $this->loadParticipations();
-
         $this->dispatch('participation-saved', availableSeats: $this->availableBusSeats);
-
         $this->resetForm();
     }
 
@@ -148,13 +178,13 @@ class SurveyMaranata extends Component
     #[Computed]
     public function busSeats()
     {
-        return $this->busParticipants;
+        return Participation::where('transport', TransportEnum::BUS)->sum('seats');
     }
 
     #[Computed]
     public function availableBusSeats()
     {
-        return max(0, $this->busCapacity - $this->busParticipants);
+        return max(0, $this->busCapacity - $this->busSeats);
     }
 
     #[Computed]
@@ -172,22 +202,41 @@ class SurveyMaranata extends Component
     #[Computed]
     public function busesNeeded()
     {
-        if ($this->busParticipants <= 0) {
+        if ($this->busSeats <= 0) {
             return 0;
         }
-        return ceil($this->busParticipants / $this->busCapacity);
+        return ceil($this->busSeats / $this->busCapacity);
     }
 
     #[Computed]
     public function busIncome()
     {
         $passagePrice = 10;
-        return $this->busParticipants * $passagePrice;
+        return $this->busSeats * $passagePrice;
     }
 
     #[Layout('components.layouts.web')]
     public function render()
     {
-        return view('livewire.survey-maranata');
+        return view('livewire.survey-maranata', [
+            'participationsList' => $this->filteredParticipations()
+        ]);
+    }
+
+    #[Computed(persist: true)]
+    public function filteredParticipations()
+    {
+        $query = Participation::query();
+
+        if ($this->filterBy === 'bus') {
+            $query->where('transport', TransportEnum::BUS);
+        } elseif ($this->filterBy === 'individual') {
+            $query->where('transport', TransportEnum::INDIVIDUAL);
+        }
+
+        $query->orderBy($this->sortBy, $this->sortDirection);
+
+        return $query->get();
     }
 }
+

@@ -33,7 +33,6 @@
         view: 'form',
         seats: @entangle('seats'),
         baseAvailable: {{ $this->availableBusSeats }},
-        // Lógica del contador
         deadline: '{{ $this->deadlineIsoString }}',
         timeLeft: { hours: '00', minutes: '00', seconds: '00' },
         timerExpired: false,
@@ -50,7 +49,7 @@
                 if (distance < 0) {
                     clearInterval(interval);
                     this.timerExpired = true;
-                    $wire.call('$refresh'); // Refresca el componente para deshabilitar el bus
+                    $wire.call('$refresh');
                     return;
                 }
 
@@ -71,12 +70,12 @@
             <p class="text-lg text-white/90 mt-1 drop-shadow-md">Distrito Misionero de La Alameda en el  <a href="https://maps.app.goo.gl/gARkbiS1eJzVRr2t8" target="_blank" class="text-yellow-300 underline">Club Portada del Sol</a></p>
         </div>
     </div>
+
     {{-- Vista del Formulario --}}
     <div x-show="view === 'form'" x-transition>
         <div class="relative z-10 -mt-12">
             <div class="bg-gray-50/80 backdrop-blur-sm shadow-xl rounded-2xl border border-gray-200/50">
                 <div class="p-6 sm:p-8">
-                    {{-- Reemplazo del título por el contador --}}
                     <div class="text-center mb-6">
                         <div x-show="!timerExpired">
                             <h2 class="text-lg font-semibold text-gray-800 mb-2">¡Reserva tu cupo para el bus ahora!</h2>
@@ -196,7 +195,7 @@
                     </form>
 
                     <div class="mt-6 pt-6 border-t border-gray-200 text-center">
-                        <a href="#" @click.prevent="view = 'password'" class="text-sm text-blue-600 hover:text-blue-500 underline underline-offset-4">Ver reporte de participación →</a>
+                        <a href="#" @click.prevent="$wire.isReportUnlocked ? view = 'report' : view = 'password'" class="text-sm text-blue-600 hover:text-blue-500 underline underline-offset-4">Ver reporte de participación →</a>
                     </div>
                 </div>
             </div>
@@ -244,7 +243,7 @@
                         <p class="text-base text-gray-600">Tu registro ha sido exitoso. ¡Que Dios nos bendiga en este día especial de sábado!</p>
                     </div>
                     <div class="mt-8 flex justify-center space-x-4">
-                        <button @click="view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
+                        <button @click="$wire.isReportUnlocked ? view = 'report' : view = 'password'" type="button" class="inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
                             Ver Reporte
                         </button>
                         <button @click="view = 'form'" wire:click="resetForm" type="button" class="inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
@@ -266,68 +265,37 @@
                     <p class="mt-2 text-lg text-gray-600">Maranata Spring 2025</p>
                 </div>
 
-                {{-- Indicadores Principales --}}
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center">
-                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <p class="text-3xl font-bold">{{ $this->totalParticipants }}</p>
-                        <p class="text-sm text-gray-600">Total Participantes</p>
-                    </div>
-                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <p class="text-3xl font-bold">{{ $this->busParticipants }}</p>
-                        <p class="text-sm text-gray-600">Transporte Comunitario</p>
-                    </div>
-                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <p class="text-3xl font-bold">{{ $this->ownParticipants }}</p>
-                        <p class="text-sm text-gray-600">Transporte Personal</p>
-                    </div>
-                    <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
-                        <p class="text-3xl font-bold">{{ $this->participations->count() }}</p>
-                        <p class="text-sm text-gray-600">Total Registros</p>
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-2 sm:space-y-0">
+                    <div class="flex space-x-1 bg-gray-200 p-1 rounded-lg">
+                        <button wire:click="filter('all')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'all' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Todos</button>
+                        <button wire:click="filter('bus')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'bus' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">En Bus</button>
+                        <button wire:click="filter('individual')" class="px-3 py-1 text-sm rounded-md transition {{ $filterBy === 'individual' ? 'bg-white shadow' : 'hover:bg-gray-300' }}">Individual</button>
                     </div>
                 </div>
 
-                {{-- Información para Contratar Bus --}}
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                        <span class="text-xl mr-3">🚌</span>
-                        Información para Contratar Bus
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                        <div class="bg-blue-100 text-blue-800 p-4 rounded-lg">
-                            <p class="text-3xl font-bold">{{ $this->busSeats }}</p>
-                            <p class="font-medium">Asientos Necesarios</p>
-                        </div>
-                        <div class="bg-green-100 text-green-800 p-4 rounded-lg">
-                            <p class="text-3xl font-bold">{{ $this->busesNeeded }}</p>
-                            <p class="font-medium">Bus(es) de {{ $this->busCapacity }} asientos</p>
-                        </div>
-                        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg">
-                            <p class="text-3xl font-bold">S/ {{ number_format($this->busIncome, 2) }}</p>
-                            <p class="font-medium">Ingresos por Pasajes</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Lista de Participantes --}}
                 <div class="bg-white border border-gray-200 rounded-lg p-6">
-                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Lista de Participantes Registrados</h3>
                      <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="#" wire:click.prevent="sortBy('full_name')" class="flex items-center space-x-1">
+                                            <span>Nombre</span>
+                                            @if($sortBy === 'full_name')
+                                                <span class="text-gray-900">@if($sortDirection === 'asc') &#9650; @else &#9660; @endif</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participantes</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transporte</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Registro</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($this->participations as $p)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->full_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $p->transport === TransportEnum::BUS ? $p->seats : 1 }}
-                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $p->transport === TransportEnum::BUS ? $p->seats : 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $p->transport === TransportEnum::BUS ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
                                             {{ $p->transport->getLabel() }}
@@ -337,7 +305,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Aún no hay participantes registrados.</td>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No hay registros que coincidan con el filtro.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
