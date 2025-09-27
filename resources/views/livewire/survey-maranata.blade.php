@@ -124,8 +124,8 @@
                                         <div class="flex-1">
                                             <h4 class="font-semibold text-lg text-gray-900 mb-2">{{ $this->isBusDisabled ? TransportEnum::BUS->getLabel().' - AGOTADO' : TransportEnum::BUS->getLabel() }}</h4>
                                             <div class="space-y-2 text-sm {{ $this->isBusDisabled ? 'text-gray-500' : 'text-gray-600' }}">
-                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 8 soles pasaje sentado</strong></span></div>
-                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 5 soles pasaje de pie</strong></span></div>
+                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 7 soles pasaje sentado</strong></span></div>
+                                                <div class="flex items-center space-x-2"><span>💰</span><span><strong>S/ 4 soles pasaje de pie</strong></span></div>
                                                 <div class="flex items-center space-x-2"><span>🎟️</span><span><strong>Paga entrada al club</strong> (S/ 10 Adultos + S/ 5 niños)</span></div>
                                                 <div class="flex items-center space-x-2"><span>🕐</span><span>Salida desde el parque de la iglesia <strong> a las 8:00 am</strong> </span></div>
                                                 <div class="flex items-center space-x-2"><span>🥗</span><span>No olvide llevar su almuerzo</span></div>

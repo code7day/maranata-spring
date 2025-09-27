@@ -147,7 +147,7 @@ class SurveyMaranata extends Component
         if ($this->transport instanceof TransportEnum && $this->transport === TransportEnum::BUS) {
             $seatsToSave = (int) $this->seats;
             $standingToSave = (int) $this->standing;
-            $totalFare = ($seatsToSave * 8) + ($standingToSave * 5);
+            $totalFare = ($seatsToSave * 7) + ($standingToSave * 4);
         }
 
         Participation::create([
@@ -247,14 +247,14 @@ class SurveyMaranata extends Component
     #[Computed]
     public function seatedBusIncome()
     {
-        $seatedPrice = 8;
+        $seatedPrice = 7;
         return $this->totalBusSeated * $seatedPrice;
     }
 
     #[Computed]
     public function standingBusIncome()
     {
-        $standingPrice = 5;
+        $standingPrice = 4;
         return $this->totalBusStanding * $standingPrice;
     }
 
