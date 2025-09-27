@@ -179,7 +179,7 @@
                             </div>
                             <div x-show="(seats > 0 || standing > 0)" class="text-center p-3 bg-yellow-100 border border-yellow-200 rounded-lg">
                                 <p class="font-semibold text-yellow-800">Monto total a pagar por pasajes:
-                                    <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 8 + (standing || 0) * 5 ).toFixed(2)}`"></span>
+                                    <span class="text-lg font-bold" x-text="`S/ ${( (seats || 0) * 7 + (standing || 0) * 4 ).toFixed(2)}`"></span>
                                 </p>
                                 <p class="text-sm mt-2 text-gray-700">Puedes yapear al <strong>989 059 322</strong> o pagar en efectivo al hermano <strong>Wilfredo Colque / Wilmer Salcedo</strong>.</p>
                             </div>
@@ -342,7 +342,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         @if($p->transport === TransportEnum::BUS)
                                             <span>{{ $p->seats }} sentados, {{ $p->standing }} de pie</span>
-                                            <span class="block text-xs text-gray-500">(Total: S/ {{ number_format(($p->seats * 8) + ($p->standing * 5), 2) }})</span>
+                                            <span class="block text-xs text-gray-500">(Total: S/ {{ number_format(($p->seats * 7) + ($p->standing * 4), 2) }})</span>
                                         @else
                                             <span>1 participante</span>
                                         @endif
