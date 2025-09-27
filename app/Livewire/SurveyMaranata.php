@@ -24,8 +24,8 @@ class SurveyMaranata extends Component
 
     public bool $showSeatsInput = false;
 
-    public int $busSeatedCapacity = 27;
-    public int $busStandingCapacity = 20;
+    public int $busSeatedCapacity = 35;
+    public int $busStandingCapacity = 25;
     public int $maxSeatsPerReservation = 7;
 
     public string $reportPassword = '';
